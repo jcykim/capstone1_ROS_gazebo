@@ -81,8 +81,9 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "data_integation");
   ros::NodeHandle n;
 
-  ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
-  ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
+  ros::Subscriber sub_lidar = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
+  ros::Subscriber sub_upper_webcam = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback_1);
+  ros::Subscriber sub_lower_webcam = n.subscribe<core_msgs::lower_webcam>("/position", 1000, camera_Callback_2);
   ros::Publisher pub_left_wheel =
       n.advertise<std_msgs::Float64>("/turtlebot3_waffle_sim/left_wheel_velocity_controller/command", 10);
   ros::Publisher pub_right_wheel =

@@ -36,10 +36,11 @@ float lidar_degree[400];
 float lidar_distance[400];
 float lidar_obs;
 
-int ball_number;
-float ball_X[20];
-float ball_Y[20];
-float ball_distance[20];
+int32_t blue_num, red_num, green_num, still_blue, section;
+uint8_t is_bump;
+float blue_x[20], red_x[20], green_x[20];
+float blue_y[20], red_y[20], green_y[20];
+float blue_distance[20], red_distance[20], green_distance[20];
 int near_ball;
 
 int action;
@@ -62,18 +63,39 @@ void lidar_Callback(const sensor_msgs::LaserScan::ConstPtr& scan)
   }
   map_mutex.unlock();
 }
-void camera_Callback(const core_msgs::ball_position::ConstPtr& position)
+
+void camera_Callback_1(const core_msgs::ball_position::ConstPtr& position)
 {
-  int count = position->size;
-  ball_number = count;
-  for (int i = 0; i < count; i++)
+  blue_num = position->blue_num;
+  red_num = position->red_num;
+  // Note: There is only 1 green ball, but we track # of green balls anyway for consistency
+  green_num = position->green_num;
+  is_bump = position->is_bump;
+
+  for (int i = 0; i < blue_num; i++)
   {
-    ball_X[i] = position->img_x[i];
-    ball_Y[i] = position->img_y[i];
-    // std::cout << "degree : "<< ball_degree[i];
-    // std::cout << "   distance : "<< ball_distance[i]<<std::endl;
-    ball_distance[i] = ball_X[i] * ball_X[i] + ball_Y[i] * ball_X[i];
+    blue_x[i] = position->blue_x[i];
+    blue_y[i] = position->blue_y[i];
+    blue_distance[i] = position->blue_z[i];
   }
+  for (int i = 0; i < red_num; i++)
+  {
+    red_x[i] = position->red_x[i];
+    red_y[i] = position->red_y[i];
+    red_distance[i] = position->red_z[i];
+  }
+  for (int i = 0; i < green_num; i++)
+  {
+    green_x[i] = position->green_x[i];
+    green_y[i] = position->green_y[i];
+    green_distance[i] = position->green_z[i];
+  }
+}
+
+void camera_Callback_2(const core_msgs::lower_webcam::ConstPtr& lower_webcam)
+{
+  still_blue = lower_webcam->still_blue;
+  section = lower_webcam->section;
 }
 
 //-------- 운전 관련 함수 --------//

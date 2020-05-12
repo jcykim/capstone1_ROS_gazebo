@@ -76,6 +76,133 @@ void camera_Callback(const core_msgs::ball_position::ConstPtr& position)
   }
 }
 
+//-------- 운전 관련 함수 --------//
+// 왼쪽 바퀴, 오른쪽 바퀴에 신호를 보내는 함수들입니다.
+
+class WheelController
+{
+public:
+  /** 전진 시 바퀴가 취하는 속도 */
+  static constexpr double FORWARD_SPEED = 1;
+  /** 전진 시 좌/우 보정을 위해 추가하는 속도 */
+  static constexpr double FORWARD_SPEED_ADJUSTMENT = 0.1;
+  /** 후진 시 바퀴가 취하는 속도 */
+  static constexpr double BACKWARD_SPEED = -0.5;
+  /** 정지 상태에서 선회할 때 각 바퀴가 취하는 속도(의 절대값) */
+  static constexpr double TURN_SPEED = 0.5;
+  /** U턴 시 안쪽 바퀴가 취하는 속도 */
+  static constexpr double UTURN_INNER_SPEED = 0.5;
+  /** U턴 시 바깥쪽 바퀴가 취하는 속도 */
+  static constexpr double UTURN_OUTER_SPEED = 1;
+
+  WheelController(const ros::Publisher& fl_wheel, const ros::Publisher& fr_wheel, const ros::Publisher& bl_wheel,
+                  const ros::Publisher& br_wheel)
+    : fl_wheel_(fl_wheel), fr_wheel_(fr_wheel), bl_wheel_(bl_wheel), br_wheel_(br_wheel)
+  {
+  }
+
+  /**
+   * 일직선으로 전진한다.
+   */
+  void goForward() const
+  {
+    setWheelSpeeds(FORWARD_SPEED, FORWARD_SPEED, FORWARD_SPEED, FORWARD_SPEED);
+  }
+
+  /**
+   * 일직선으로 전진하되, 왼쪽으로 약간 보정한다.
+   */
+  void goForwardAdjustLeft() const
+  {
+    setWheelSpeeds(FORWARD_SPEED, FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT, FORWARD_SPEED,
+                   FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT);
+  }
+
+  /**
+   * 일직선으로 전진하되, 오른쪽으로 약간 보정한다.
+   */
+  void goForwardAdjustRight() const
+  {
+    setWheelSpeeds(FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT, FORWARD_SPEED, FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT,
+                   FORWARD_SPEED);
+  }
+
+  /**
+   * 일직선으로 후진한다.
+   */
+  void goBackward() const
+  {
+    setWheelSpeeds(BACKWARD_SPEED, BACKWARD_SPEED, BACKWARD_SPEED, BACKWARD_SPEED);
+  }
+
+  /**
+   * 제자리에서 좌회전한다. (반시계 방향)
+   */
+  void turnLeft() const
+  {
+    setWheelSpeeds(-TURN_SPEED, TURN_SPEED, -TURN_SPEED, TURN_SPEED);
+  }
+
+  /**
+   * 제자리에서 우회전한다. (시계 방향)
+   */
+  void turnRight() const
+  {
+    setWheelSpeeds(TURN_SPEED, -TURN_SPEED, TURN_SPEED, -TURN_SPEED);
+  }
+
+  /**
+   * 부드럽게 곡선을 그리며 좌회전한다.
+   */
+  void smoothTurnLeft() const
+  {
+    setWheelSpeeds(UTURN_INNER_SPEED, UTURN_OUTER_SPEED, UTURN_INNER_SPEED, UTURN_OUTER_SPEED);
+  }
+
+  /**
+   * 부드럽게 곡선을 그리며 우회전한다.
+   */
+  void smoothTurnRight() const
+  {
+    setWheelSpeeds(UTURN_OUTER_SPEED, UTURN_INNER_SPEED, UTURN_OUTER_SPEED, UTURN_INNER_SPEED);
+  }
+
+  /**
+   * 제자리에 정지한다.
+   */
+  void stop() const
+  {
+    setWheelSpeeds(0, 0, 0, 0);
+  }
+
+private:
+  const ros::Publisher& fl_wheel_;
+  const ros::Publisher& fr_wheel_;
+  const ros::Publisher& bl_wheel_;
+  const ros::Publisher& br_wheel_;
+
+  /**
+   * 4개의 바퀴에 각각의 속도를 지정한다.
+   */
+  void setWheelSpeeds(double fl_speed, double fr_speed, double bl_speed, double br_speed) const
+  {
+    std_msgs::Float64 fl_wheel_msg;
+    std_msgs::Float64 fr_wheel_msg;
+    std_msgs::Float64 bl_wheel_msg;
+    std_msgs::Float64 br_wheel_msg;
+
+    fl_wheel_msg.data = fl_speed;
+    fr_wheel_msg.data = fr_speed;
+    bl_wheel_msg.data = bl_speed;
+    br_wheel_msg.data = br_speed;
+
+    fl_wheel_.publish(fl_wheel_msg);
+    fr_wheel_.publish(fr_wheel_msg);
+    bl_wheel_.publish(bl_wheel_msg);
+    br_wheel_.publish(br_wheel_msg);
+  }
+};
+
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "data_integation");
@@ -84,37 +211,16 @@ int main(int argc, char** argv)
   ros::Subscriber sub_lidar = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
   ros::Subscriber sub_upper_webcam = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback_1);
   ros::Subscriber sub_lower_webcam = n.subscribe<core_msgs::lower_webcam>("/position", 1000, camera_Callback_2);
-  ros::Publisher pub_left_wheel =
-      n.advertise<std_msgs::Float64>("/turtlebot3_waffle_sim/left_wheel_velocity_controller/command", 10);
-  ros::Publisher pub_right_wheel =
-      n.advertise<std_msgs::Float64>("/turtlebot3_waffle_sim/right_wheel_velocity_controller/command", 10);
+  ros::Publisher fl_wheel = n.advertise<std_msgs::Float64>("/run_2/FLwheel_velocity_controller/command", 10);
+  ros::Publisher fr_wheel = n.advertise<std_msgs::Float64>("/run_2/FRwheel_velocity_controller/command", 10);
+  ros::Publisher bl_wheel = n.advertise<std_msgs::Float64>("/run_2/BLwheel_velocity_controller/command", 10);
+  ros::Publisher br_wheel = n.advertise<std_msgs::Float64>("/run_2/BRwheel_velocity_controller/command", 10);
+
+  WheelController wheelController(fl_wheel, fr_wheel, bl_wheel, br_wheel);
 
   while (ros::ok)
   {
-    std_msgs::Float64 left_wheel_msg;
-    std_msgs::Float64 right_wheel_msg;
-
-    left_wheel_msg.data = 1;   // set left_wheel velocity
-    right_wheel_msg.data = 1;  // set right_wheel velocity
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-    // // 각노드에서 받아오는 센서 테이터가 잘 받아 왔는지 확인하는 코드 (ctrl + /)을 눌러 주석을 추가/제거할수 있다.///
-    /////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //  for(int i = 0; i < lidar_size; i++
-    // {
-    //    std::cout << "degree : "<< lidar_degree[i];
-    //    std::cout << "   distance : "<< lidar_distance[i]<<std::endl;
-    //  }
-    // for(int i = 0; i < ball_number; i++)
-    // {
-    // 	std::cout << "ball_X : "<< ball_X[i];
-    // 	std::cout << "ball_Y : "<< ball_Y[i]<<std::endl;
-    //
-    // }
-
-    pub_left_wheel.publish(left_wheel_msg);    // publish left_wheel velocity
-    pub_right_wheel.publish(right_wheel_msg);  // publish right_wheel velocity
-
+    // 운전 코드는 요기에!
     ros::Duration(0.025).sleep();
     ros::spinOnce();
   }

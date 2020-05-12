@@ -17,6 +17,7 @@
 #include <ros/package.h>
 #include <ros/ros.h>
 #include "core_msgs/ball_position.h"
+#include "core_msgs/lower_webcam.h"
 
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"

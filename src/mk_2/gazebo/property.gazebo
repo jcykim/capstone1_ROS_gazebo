@@ -1,0 +1,74 @@
+<?xml version='1.0'?>
+
+<robot name="color" xmlns:xacro="http://ros.org/wiki/xacro">
+	
+	<gazebo reference="base">
+		<visual>
+				<material>
+					<ambient>${234/255} ${234/255} ${234/255} 1</ambient>
+					<diffuse>${234/255} ${234/255} ${234/255} 1</diffuse>
+					<specular>${234/255} ${234/255} ${234/255} 1</specular>
+				</material>
+		</visual>
+	</gazebo>
+	
+	<xacro:macro name="sus" params="prefix">
+		<gazebo reference="${prefix}_suspension">
+			<visual>
+				<material>
+					<ambient>${255/255} ${187/255} 0 1</ambient>
+					<diffuse>${255/255} ${187/255} 0 1</diffuse>
+					<specular>${255/255} ${187/255} 0 1</specular>
+				</material>
+		</visual>
+		</gazebo>
+	</xacro:macro>
+	
+	<xacro:sus prefix="FL">
+	</xacro:sus>
+	<xacro:sus prefix="FR">
+	</xacro:sus>
+	<xacro:sus prefix="BL">
+	</xacro:sus>
+	<xacro:sus prefix="BR">
+	</xacro:sus>
+
+	<xacro:macro name="mot" params="prefix">
+		<gazebo reference="${prefix}_actuator">
+			<visual>
+				<material>
+					<ambient>${25/255} ${25/255} ${25/255} 1</ambient>
+					<diffuse>${25/255} ${25/255} ${25/255} 1</diffuse>
+					<specular>${25/255} ${25/255} ${25/255} 1</specular>
+				</material>
+			</visual>
+		</gazebo>
+	</xacro:macro>
+	
+	<xacro:mot prefix="FL"></xacro:mot>
+	<xacro:mot prefix="FR"></xacro:mot>
+	<xacro:mot prefix="BL"></xacro:mot>
+	<xacro:mot prefix="BR"></xacro:mot>
+
+	<xacro:macro name="vehe" params="prefix">
+		<gazebo reference="${prefix}_wheel">
+			<visual>
+				<material>
+					<ambient>${93/255} ${93/255} ${93/255} 1</ambient>
+					<diffuse>${93/255} ${93/255} ${93/255} 1</diffuse>
+					<specular>${93/255} ${93/255} ${93/255} 1</specular>
+				</material>
+			</visual>
+			<mu1>0.3</mu1>
+			<mu2>0.3</mu2>
+			<kp>10000</kp>
+			<kd>10</kd>
+		</gazebo>
+	</xacro:macro>
+
+	<xacro:vehe prefix="FL"></xacro:vehe>
+	<xacro:vehe prefix="FR"></xacro:vehe>
+	<xacro:vehe prefix="BL"></xacro:vehe>
+	<xacro:vehe prefix="BR"></xacro:vehe>
+	
+</robot>

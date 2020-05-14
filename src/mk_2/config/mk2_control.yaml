@@ -1,0 +1,47 @@
+run_2:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100  
+
+  # Position Controllers ---------------------------------------
+  FLsuspension_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: FL_Ajoint
+    pid: {p: 10.0, i: 0.0, d: 0.1}
+    
+  FRsuspension_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: FR_Ajoint
+    pid: {p: 10.0, i: 0.0, d: 0.1}
+    
+  BLsuspension_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: BL_Ajoint
+    pid: {p: 10.0, i: 0.0, d: 0.1}
+    
+  BRsuspension_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: BR_Ajoint
+    pid: {p: 10.0, i: 0.0, d: 0.1}
+    
+  FLwheel_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: FL_Wjoint
+    pid: {p: 10.0, i: 0.001, d: 0.1}
+    
+  FRwheel_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: FR_Wjoint
+    pid: {p: 100.0, i: 0.001, d: 0.1}
+    
+  BLwheel_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: BL_Wjoint
+    pid: {p: 100.0, i: 0.001, d: 0.1}
+    
+  BRwheel_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: BR_Wjoint
+    pid: {p: 100.0, i: 0.001, d: 0.1}
+

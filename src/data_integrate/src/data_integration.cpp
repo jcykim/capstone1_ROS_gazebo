@@ -427,7 +427,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber sub_lidar = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
   ros::Subscriber sub_upper_webcam = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback_1);
-  ros::Subscriber sub_lower_webcam = n.subscribe<core_msgs::lower_webcam>("/position", 1000, camera_Callback_2);
+  ros::Subscriber sub_lower_webcam = n.subscribe<core_msgs::line_info>("/position", 1000, camera_Callback_2);
   ros::Publisher fl_wheel = n.advertise<std_msgs::Float64>("/run_2/FLwheel_velocity_controller/command", 10);
   ros::Publisher fr_wheel = n.advertise<std_msgs::Float64>("/run_2/FRwheel_velocity_controller/command", 10);
   ros::Publisher bl_wheel = n.advertise<std_msgs::Float64>("/run_2/BLwheel_velocity_controller/command", 10);

@@ -12,7 +12,7 @@ add_message_files( DIRECTORY msg
   FILES
   ball_position.msg
   multiarray.msg
-  lower_webcam.msg
+  line_info.msg
 )
 
 ## Generate services in the 'srv' folder

@@ -17,7 +17,7 @@
 #include <ros/package.h>
 #include <ros/ros.h>
 #include "core_msgs/ball_position.h"
-#include "core_msgs/lower_webcam.h"
+#include "core_msgs/line_info.h"
 
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
@@ -36,8 +36,8 @@ float lidar_degree[400];
 float lidar_distance[400];
 float lidar_obs;
 
-int32_t blue_num, red_num, green_num, still_blue, section;
-uint8_t is_bump;
+int32_t blue_num, red_num, green_num, section;
+bool is_bump, still_blue;
 float blue_x[20], red_x[20], green_x[20];
 float blue_y[20], red_y[20], green_y[20];
 float blue_distance[20], red_distance[20], green_distance[20];
@@ -70,7 +70,7 @@ void camera_Callback_1(const core_msgs::ball_position::ConstPtr& position)
   red_num = position->red_num;
   // Note: There is only 1 green ball, but we track # of green balls anyway for consistency
   green_num = position->green_num;
-  is_bump = position->is_bump;
+  still_blue = position->still_blue;
 
   for (int i = 0; i < blue_num; i++)
   {
@@ -92,10 +92,11 @@ void camera_Callback_1(const core_msgs::ball_position::ConstPtr& position)
   }
 }
 
-void camera_Callback_2(const core_msgs::lower_webcam::ConstPtr& lower_webcam)
+void camera_Callback_2(const core_msgs::line_info::ConstPtr& line_info)
 {
-  still_blue = lower_webcam->still_blue;
-  section = lower_webcam->section;
+  
+  is_bump = line_info->is_bump;
+  section = line_info->section;
 }
 
 //-------- 운전 관련 함수 --------//

@@ -17,7 +17,5 @@ float32[] green_x
 float32[] green_y
 float32[] green_z
 
-#### Line Tracer Mode data ####
-
-# 요철 구간인가? (true/false)
-bool is_bump
+# 파란공을 밀고 있는가? (true/false)
+bool still_blue

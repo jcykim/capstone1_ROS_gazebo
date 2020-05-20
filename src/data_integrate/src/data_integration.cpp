@@ -257,168 +257,180 @@ enum class LineTracerMoveDirection
 void updateLineTracerState(LineTracerMode& mode, LineTracerMoveDirection& moveDirection,
                            CameraLinePosition cameraLinePosition)
 {
-  if (mode == LineTracerMode::STRAIGHT)
-  {
-    if (cameraLinePosition == CameraLinePosition::FAR_LEFT)
+  int straight_count = 0, curve_count = 0;
+  if(straight_count==3 && curve_count==3){
+    std::cout << "Line Tracer mode is over." << endl;
+    return; // 탈출 조건 설정해야함!!!! 
+  }
+  else{
+    if (mode == LineTracerMode::STRAIGHT)
     {
-      // 왼쪽으로 U턴을 시작한다
-      mode = LineTracerMode::TURNING;
-      moveDirection = LineTracerMoveDirection::TURN_LEFT;
+      if (cameraLinePosition == CameraLinePosition::FAR_LEFT)
+      {
+        // 왼쪽으로 U턴을 시작한다
+        mode = LineTracerMode::TURNING;
+        moveDirection = LineTracerMoveDirection::TURN_LEFT;
+        straight_count += 1;
+        return;
+      }
+      if (cameraLinePosition == CameraLinePosition::FAR_RIGHT)
+      {
+        // 오른쪽으로 U턴을 시작한다
+        mode = LineTracerMode::TURNING;
+        moveDirection = LineTracerMoveDirection::TURN_RIGHT;
+        straight_count += 1;
+        return;
+      }
+
+      switch (moveDirection)
+      {
+        case LineTracerMoveDirection::STRAIGHT:
+          switch (cameraLinePosition)
+          {
+            case CameraLinePosition::CENTER:
+              // 직진하는 상태를 유지한다
+              break;
+            case CameraLinePosition::LEFT:
+              // 왼쪽으로 보정한다
+              moveDirection = LineTracerMoveDirection::LINE_LEFT;
+              break;
+            case CameraLinePosition::RIGHT:
+              // 오른쪽으로 보정한다
+              moveDirection = LineTracerMoveDirection::LINE_RIGHT;
+              break;
+            case CameraLinePosition::NONE:
+              // 갑자기 검은 선이 사라짐...어떻게 처리해야 할까?
+              break;
+            case CameraLinePosition::FAR_LEFT:
+            case CameraLinePosition::FAR_RIGHT:
+              // 이 상태는 나올 수 없음
+              break;
+            default:
+              // 잘못된 상태, 논리적 오류?
+              break;
+          }
+          break;
+
+        case LineTracerMoveDirection::LINE_LEFT:
+          switch (cameraLinePosition)
+          {
+            case CameraLinePosition::LEFT:
+              // 왼쪽으로 보정하는 상태를 유지한다
+              break;
+            case CameraLinePosition::CENTER:
+              // 직진 상태로 복귀한다
+              moveDirection = LineTracerMoveDirection::STRAIGHT;
+              break;
+            case CameraLinePosition::RIGHT:
+            case CameraLinePosition::NONE:
+              // 오른쪽으로 보정한다
+              moveDirection = LineTracerMoveDirection::LINE_RIGHT;
+            case CameraLinePosition::FAR_LEFT:
+            case CameraLinePosition::FAR_RIGHT:
+              // 이 상태는 나올 수 없음
+              break;
+            default:
+              // 잘못된 상태, 논리적 오류?
+              break;
+          }
+          break;
+
+        case LineTracerMoveDirection::LINE_RIGHT:
+          switch (cameraLinePosition)
+          {
+            case CameraLinePosition::RIGHT:
+              // 오른쪽으로 보정하는 상태를 유지한다
+              break;
+            case CameraLinePosition::CENTER:
+              // 직진 상태로 복귀한다
+              moveDirection = LineTracerMoveDirection::STRAIGHT;
+              break;
+            case CameraLinePosition::LEFT:
+            case CameraLinePosition::NONE:
+              // 왼쪽으로 보정한다
+              moveDirection = LineTracerMoveDirection::LINE_LEFT;
+            case CameraLinePosition::FAR_LEFT:
+            case CameraLinePosition::FAR_RIGHT:
+              // 이 상태는 나올 수 없음
+              break;
+            default:
+              // 잘못된 상태, 논리적 오류?
+              break;
+          }
+          break;
+
+        case LineTracerMoveDirection::TURN_LEFT:
+        case LineTracerMoveDirection::TURN_RIGHT:
+          // 이 상태는 나올 수 없음
+          break;
+        default:
+          // 잘못된 상태, 논리적 오류?
+          break;
+      }
+    }
+    else if (mode == LineTracerMode::TURNING)
+    {
+      switch (moveDirection)
+      {
+        case LineTracerMoveDirection::TURN_LEFT:
+          switch (cameraLinePosition)
+          {
+            case CameraLinePosition::LEFT:
+            case CameraLinePosition::FAR_LEFT:
+              // 왼쪽으로 U턴을 계속 한다
+              break;
+            case CameraLinePosition::CENTER:
+            case CameraLinePosition::RIGHT:
+            case CameraLinePosition::FAR_RIGHT:
+            case CameraLinePosition::NONE:
+              // 직진 모드로 되돌아간다
+              mode = LineTracerMode::STRAIGHT;
+              moveDirection = LineTracerMoveDirection::STRAIGHT;
+              curve_count += 1;
+              break;
+            default:
+              // 잘못된 상태, 논리적 오류?
+              break;
+          }
+
+        case LineTracerMoveDirection::TURN_RIGHT:
+          switch (cameraLinePosition)
+          {
+            case CameraLinePosition::RIGHT:
+            case CameraLinePosition::FAR_RIGHT:
+              // 오른쪽으로 U턴을 계속 한다
+              break;
+            case CameraLinePosition::CENTER:
+            case CameraLinePosition::LEFT:
+            case CameraLinePosition::FAR_LEFT:
+            case CameraLinePosition::NONE:
+              // 직진 모드로 되돌아간다
+              mode = LineTracerMode::STRAIGHT;
+              moveDirection = LineTracerMoveDirection::STRAIGHT;
+              curve_count += 1;
+              break;
+            default:
+              // 잘못된 상태, 논리적 오류?
+              break;
+          }
+
+        case LineTracerMoveDirection::STRAIGHT:
+        case LineTracerMoveDirection::LINE_LEFT:
+        case LineTracerMoveDirection::LINE_RIGHT:
+          // 이 상태는 나올 수 없음
+          break;
+        default:
+          // 잘못된 상태, 논리적 오류?
+          break;
+      }
+    }
+    else
+    {
+      // 잘못된 상태, 논리적 오류?
       return;
     }
-    if (cameraLinePosition == CameraLinePosition::FAR_RIGHT)
-    {
-      // 오른쪽으로 U턴을 시작한다
-      mode = LineTracerMode::TURNING;
-      moveDirection = LineTracerMoveDirection::TURN_RIGHT;
-      return;
     }
-
-    switch (moveDirection)
-    {
-      case LineTracerMoveDirection::STRAIGHT:
-        switch (cameraLinePosition)
-        {
-          case CameraLinePosition::CENTER:
-            // 직진하는 상태를 유지한다
-            break;
-          case CameraLinePosition::LEFT:
-            // 왼쪽으로 보정한다
-            moveDirection = LineTracerMoveDirection::LINE_LEFT;
-            break;
-          case CameraLinePosition::RIGHT:
-            // 오른쪽으로 보정한다
-            moveDirection = LineTracerMoveDirection::LINE_RIGHT;
-            break;
-          case CameraLinePosition::NONE:
-            // 갑자기 검은 선이 사라짐...어떻게 처리해야 할까?
-            break;
-          case CameraLinePosition::FAR_LEFT:
-          case CameraLinePosition::FAR_RIGHT:
-            // 이 상태는 나올 수 없음
-            break;
-          default:
-            // 잘못된 상태, 논리적 오류?
-            break;
-        }
-        break;
-
-      case LineTracerMoveDirection::LINE_LEFT:
-        switch (cameraLinePosition)
-        {
-          case CameraLinePosition::LEFT:
-            // 왼쪽으로 보정하는 상태를 유지한다
-            break;
-          case CameraLinePosition::CENTER:
-            // 직진 상태로 복귀한다
-            moveDirection = LineTracerMoveDirection::STRAIGHT;
-            break;
-          case CameraLinePosition::RIGHT:
-          case CameraLinePosition::NONE:
-            // 오른쪽으로 보정한다
-            moveDirection = LineTracerMoveDirection::LINE_RIGHT;
-          case CameraLinePosition::FAR_LEFT:
-          case CameraLinePosition::FAR_RIGHT:
-            // 이 상태는 나올 수 없음
-            break;
-          default:
-            // 잘못된 상태, 논리적 오류?
-            break;
-        }
-        break;
-
-      case LineTracerMoveDirection::LINE_RIGHT:
-        switch (cameraLinePosition)
-        {
-          case CameraLinePosition::RIGHT:
-            // 오른쪽으로 보정하는 상태를 유지한다
-            break;
-          case CameraLinePosition::CENTER:
-            // 직진 상태로 복귀한다
-            moveDirection = LineTracerMoveDirection::STRAIGHT;
-            break;
-          case CameraLinePosition::LEFT:
-          case CameraLinePosition::NONE:
-            // 왼쪽으로 보정한다
-            moveDirection = LineTracerMoveDirection::LINE_LEFT;
-          case CameraLinePosition::FAR_LEFT:
-          case CameraLinePosition::FAR_RIGHT:
-            // 이 상태는 나올 수 없음
-            break;
-          default:
-            // 잘못된 상태, 논리적 오류?
-            break;
-        }
-        break;
-
-      case LineTracerMoveDirection::TURN_LEFT:
-      case LineTracerMoveDirection::TURN_RIGHT:
-        // 이 상태는 나올 수 없음
-        break;
-      default:
-        // 잘못된 상태, 논리적 오류?
-        break;
-    }
-  }
-  else if (mode == LineTracerMode::TURNING)
-  {
-    switch (moveDirection)
-    {
-      case LineTracerMoveDirection::TURN_LEFT:
-        switch (cameraLinePosition)
-        {
-          case CameraLinePosition::LEFT:
-          case CameraLinePosition::FAR_LEFT:
-            // 왼쪽으로 U턴을 계속 한다
-            break;
-          case CameraLinePosition::CENTER:
-          case CameraLinePosition::RIGHT:
-          case CameraLinePosition::FAR_RIGHT:
-          case CameraLinePosition::NONE:
-            // 직진 모드로 되돌아간다
-            mode = LineTracerMode::STRAIGHT;
-            moveDirection = LineTracerMoveDirection::STRAIGHT;
-            break;
-          default:
-            // 잘못된 상태, 논리적 오류?
-            break;
-        }
-
-      case LineTracerMoveDirection::TURN_RIGHT:
-        switch (cameraLinePosition)
-        {
-          case CameraLinePosition::RIGHT:
-          case CameraLinePosition::FAR_RIGHT:
-            // 오른쪽으로 U턴을 계속 한다
-            break;
-          case CameraLinePosition::CENTER:
-          case CameraLinePosition::LEFT:
-          case CameraLinePosition::FAR_LEFT:
-          case CameraLinePosition::NONE:
-            // 직진 모드로 되돌아간다
-            mode = LineTracerMode::STRAIGHT;
-            moveDirection = LineTracerMoveDirection::STRAIGHT;
-            break;
-          default:
-            // 잘못된 상태, 논리적 오류?
-            break;
-        }
-
-      case LineTracerMoveDirection::STRAIGHT:
-      case LineTracerMoveDirection::LINE_LEFT:
-      case LineTracerMoveDirection::LINE_RIGHT:
-        // 이 상태는 나올 수 없음
-        break;
-      default:
-        // 잘못된 상태, 논리적 오류?
-        break;
-    }
-  }
-  else
-  {
-    // 잘못된 상태, 논리적 오류?
-    return;
-  }
+  
 }
 
 int main(int argc, char** argv)
@@ -428,7 +440,7 @@ int main(int argc, char** argv)
 
   ros::Subscriber sub_lidar = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
   ros::Subscriber sub_upper_webcam = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback_1);
-  ros::Subscriber sub_lower_webcam = n.subscribe<core_msgs::line_info>("/position", 1000, camera_Callback_2);
+  ros::Subscriber sub_lower_webcam = n.subscribe<core_msgs::line_info>("/line_info", 1000, camera_Callback_2);
   ros::Publisher fl_wheel = n.advertise<std_msgs::Float64>("/run_2/FLwheel_velocity_controller/command", 10);
   ros::Publisher fr_wheel = n.advertise<std_msgs::Float64>("/run_2/FRwheel_velocity_controller/command", 10);
   ros::Publisher bl_wheel = n.advertise<std_msgs::Float64>("/run_2/BLwheel_velocity_controller/command", 10);

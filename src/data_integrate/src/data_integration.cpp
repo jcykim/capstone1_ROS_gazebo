@@ -94,7 +94,6 @@ void camera_Callback_1(const core_msgs::ball_position::ConstPtr& position)
 
 void camera_Callback_2(const core_msgs::line_info::ConstPtr& line_info)
 {
-  
   is_bump = line_info->is_bump;
   section = line_info->section;
 }
@@ -122,6 +121,54 @@ public:
                   const ros::Publisher& br_wheel)
     : fl_wheel_(fl_wheel), fr_wheel_(fr_wheel), bl_wheel_(bl_wheel), br_wheel_(br_wheel)
   {
+  }
+
+  /**
+   * 로봇의 선속도와 각속도를 설정한다.
+   *
+   * @param linear_speed 선속도. 전진은 +, 후진은 -, 정지는 0.
+   *    단위는 m/s
+   * @param angular_speed 각속도. 반시계방향(좌회전)은 +, 시계방향(우회전)은 -, 직진/정지는 0.
+   *    단위는 rad/s
+   */
+  void setSpeed(double linear_speed, double angular_speed)
+  {
+    linear_speed_ = linear_speed;
+    angular_speed_ = angular_speed;
+
+    // turtlebot의 바퀴 반지름은 0.033m이다.
+    // TODO: 나중에 우리 로봇의 바퀴 크기에 맞춰 비례상수를 다시 계산해야 한다.
+    constexpr double LINEAR_SPEED_FACTOR = 1 / 0.033;
+    // TODO: 로봇의 각속도를 바퀴의 회전속도로 변환하는 비례상수는 지금은 알 수 없다.
+    // 일단 1로 놓고 나중에 제대로 구해보자.
+    constexpr double ANGULAR_SPEED_FACTOR = 1.0;
+
+    setWheelSpeeds(linear_speed_ * LINEAR_SPEED_FACTOR - angular_speed_ * ANGULAR_SPEED_FACTOR,
+                   linear_speed_ * LINEAR_SPEED_FACTOR + angular_speed_ * ANGULAR_SPEED_FACTOR,
+                   linear_speed_ * LINEAR_SPEED_FACTOR - angular_speed_ * ANGULAR_SPEED_FACTOR,
+                   linear_speed_ * LINEAR_SPEED_FACTOR + angular_speed_ * ANGULAR_SPEED_FACTOR);
+  }
+
+  /**
+   * 로봇의 선속도를 설정한다. 각속도는 기존의 값을 유지한다.
+   *
+   * @param linear_speed 선속도. 전진은 +, 후진은 -, 정지는 0.
+   *    단위는 m/s
+   */
+  void setLinearSpeed(double linear_speed)
+  {
+    setSpeed(linear_speed, angular_speed_);
+  }
+
+  /**
+   * 로봇의 각속도를 설정한다. 선속도는 기존의 값을 유지한다.
+   *
+   * @param angular_speed 각속도. 반시계방향(좌회전)은 +, 시계방향(우회전)은 -, 직진/정지는 0.
+   *    단위는 rad/s
+   */
+  void setAngularSpeed(double angular_speed)
+  {
+    setSpeed(linear_speed_, angular_speed);
   }
 
   /**
@@ -204,6 +251,9 @@ private:
   const ros::Publisher& bl_wheel_;
   const ros::Publisher& br_wheel_;
 
+  double linear_speed_ = 0.0;
+  double angular_speed_ = 0.0;
+
   /**
    * 4개의 바퀴에 각각의 속도를 지정한다.
    */
@@ -258,11 +308,13 @@ void updateLineTracerState(LineTracerMode& mode, LineTracerMoveDirection& moveDi
                            CameraLinePosition cameraLinePosition)
 {
   int straight_count = 0, curve_count = 0;
-  if(straight_count==3 && curve_count==3){
+  if (straight_count == 3 && curve_count == 3)
+  {
     std::cout << "Line Tracer mode is over." << endl;
-    return; // 탈출 조건 설정해야함!!!! 
+    return;  // 탈출 조건 설정해야함!!!!
   }
-  else{
+  else
+  {
     if (mode == LineTracerMode::STRAIGHT)
     {
       if (cameraLinePosition == CameraLinePosition::FAR_LEFT)
@@ -429,8 +481,7 @@ void updateLineTracerState(LineTracerMode& mode, LineTracerMoveDirection& moveDi
       // 잘못된 상태, 논리적 오류?
       return;
     }
-    }
-  
+  }
 }
 
 int main(int argc, char** argv)

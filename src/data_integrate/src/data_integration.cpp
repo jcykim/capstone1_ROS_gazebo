@@ -104,19 +104,6 @@ void camera_Callback_2(const core_msgs::line_info::ConstPtr& line_info)
 class WheelController
 {
 public:
-  /** 전진 시 바퀴가 취하는 속도 */
-  static constexpr double FORWARD_SPEED = 1;
-  /** 전진 시 좌/우 보정을 위해 추가하는 속도 */
-  static constexpr double FORWARD_SPEED_ADJUSTMENT = 0.1;
-  /** 후진 시 바퀴가 취하는 속도 */
-  static constexpr double BACKWARD_SPEED = -0.5;
-  /** 정지 상태에서 선회할 때 각 바퀴가 취하는 속도(의 절대값) */
-  static constexpr double TURN_SPEED = 0.5;
-  /** U턴 시 안쪽 바퀴가 취하는 속도 */
-  static constexpr double UTURN_INNER_SPEED = 0.5;
-  /** U턴 시 바깥쪽 바퀴가 취하는 속도 */
-  static constexpr double UTURN_OUTER_SPEED = 1;
-
   WheelController(const ros::Publisher& fl_wheel, const ros::Publisher& fr_wheel, const ros::Publisher& bl_wheel,
                   const ros::Publisher& br_wheel)
     : fl_wheel_(fl_wheel), fr_wheel_(fr_wheel), bl_wheel_(bl_wheel), br_wheel_(br_wheel)
@@ -169,80 +156,6 @@ public:
   void setAngularSpeed(double angular_speed)
   {
     setSpeed(linear_speed_, angular_speed);
-  }
-
-  /**
-   * 일직선으로 전진한다.
-   */
-  void goForward() const
-  {
-    setWheelSpeeds(FORWARD_SPEED, FORWARD_SPEED, FORWARD_SPEED, FORWARD_SPEED);
-  }
-
-  /**
-   * 일직선으로 전진하되, 왼쪽으로 약간 보정한다.
-   */
-  void goForwardAdjustLeft() const
-  {
-    setWheelSpeeds(FORWARD_SPEED, FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT, FORWARD_SPEED,
-                   FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT);
-  }
-
-  /**
-   * 일직선으로 전진하되, 오른쪽으로 약간 보정한다.
-   */
-  void goForwardAdjustRight() const
-  {
-    setWheelSpeeds(FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT, FORWARD_SPEED, FORWARD_SPEED + FORWARD_SPEED_ADJUSTMENT,
-                   FORWARD_SPEED);
-  }
-
-  /**
-   * 일직선으로 후진한다.
-   */
-  void goBackward() const
-  {
-    setWheelSpeeds(BACKWARD_SPEED, BACKWARD_SPEED, BACKWARD_SPEED, BACKWARD_SPEED);
-  }
-
-  /**
-   * 제자리에서 좌회전한다. (반시계 방향)
-   */
-  void turnLeft() const
-  {
-    setWheelSpeeds(-TURN_SPEED, TURN_SPEED, -TURN_SPEED, TURN_SPEED);
-  }
-
-  /**
-   * 제자리에서 우회전한다. (시계 방향)
-   */
-  void turnRight() const
-  {
-    setWheelSpeeds(TURN_SPEED, -TURN_SPEED, TURN_SPEED, -TURN_SPEED);
-  }
-
-  /**
-   * 부드럽게 곡선을 그리며 좌회전한다.
-   */
-  void smoothTurnLeft() const
-  {
-    setWheelSpeeds(UTURN_INNER_SPEED, UTURN_OUTER_SPEED, UTURN_INNER_SPEED, UTURN_OUTER_SPEED);
-  }
-
-  /**
-   * 부드럽게 곡선을 그리며 우회전한다.
-   */
-  void smoothTurnRight() const
-  {
-    setWheelSpeeds(UTURN_OUTER_SPEED, UTURN_INNER_SPEED, UTURN_OUTER_SPEED, UTURN_INNER_SPEED);
-  }
-
-  /**
-   * 제자리에 정지한다.
-   */
-  void stop() const
-  {
-    setWheelSpeeds(0, 0, 0, 0);
   }
 
 private:

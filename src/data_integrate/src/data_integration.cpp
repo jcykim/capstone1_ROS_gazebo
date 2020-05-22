@@ -216,39 +216,55 @@ const double ANGULAR_SPEED_SLOW = M_PI / 6;
 void updateLineTracerState(WheelController& wheel_controller, CameraLinePosition cameraLinePosition,
                            TurnDirection& last_turn_direction)
 {
+  double linear_speed = 0;
+  double angular_speed = 0;
+
+  if (is_bump)
+    linear_speed = LINEAR_SPEED_SLOW;
+  else
+    linear_speed = LINEAR_SPEED_FAST;
+
   switch (cameraLinePosition)
   {
     case CameraLinePosition::CENTER:
-      wheel_controller.setSpeed(LINEAR_SPEED_FAST, 0);
+      angular_speed = 0;
       break;
     case CameraLinePosition::LEFT:
       last_turn_direction = TurnDirection::LEFT;
-      wheel_controller.setSpeed(LINEAR_SPEED_FAST, ANGULAR_SPEED_SLOW);
+      angular_speed = ANGULAR_SPEED_SLOW;
       break;
     case CameraLinePosition::RIGHT:
       last_turn_direction = TurnDirection::RIGHT;
-      wheel_controller.setSpeed(LINEAR_SPEED_FAST, -ANGULAR_SPEED_SLOW);
+      angular_speed = -ANGULAR_SPEED_SLOW;
       break;
     case CameraLinePosition::FAR_LEFT:
       last_turn_direction = TurnDirection::LEFT;
-      wheel_controller.setSpeed(LINEAR_SPEED_SLOW, ANGULAR_SPEED_FAST);
+      // is_bump에 상관없이 선속도는 느리게 유지한다.
+      linear_speed = LINEAR_SPEED_SLOW;
+      angular_speed = ANGULAR_SPEED_FAST;
       break;
     case CameraLinePosition::FAR_RIGHT:
       last_turn_direction = TurnDirection::RIGHT;
-      wheel_controller.setSpeed(LINEAR_SPEED_SLOW, -ANGULAR_SPEED_FAST);
+      // is_bump에 상관없이 선속도는 느리게 유지한다.
+      linear_speed = LINEAR_SPEED_SLOW;
+      angular_speed = -ANGULAR_SPEED_FAST;
       break;
     case CameraLinePosition::NONE:
       // 로봇이 검은 줄을 놓쳤다.
+      // is_bump에 상관없이 선속도는 느리게 유지한다.
+      linear_speed = LINEAR_SPEED_SLOW;
       // 가장 최근에 회전했던 방향의 반대방향으로 지속적으로 회전하면서 검은 줄을 찾아보자.
       if (last_turn_direction == TurnDirection::RIGHT)
-        wheel_controller.setSpeed(LINEAR_SPEED_SLOW, ANGULAR_SPEED_FAST);
+        angular_speed = ANGULAR_SPEED_FAST;
       else
-        wheel_controller.setSpeed(LINEAR_SPEED_SLOW, -ANGULAR_SPEED_FAST);
+        angular_speed = -ANGULAR_SPEED_FAST;
       break;
     default:
       std::cerr << "[LOGIC ERROR] Unknown camera line position: " << static_cast<int>(cameraLinePosition) << std::endl;
       break;
   }
+
+  wheel_controller.setSpeed(linear_speed, angular_speed);
 }
 
 int main(int argc, char** argv)

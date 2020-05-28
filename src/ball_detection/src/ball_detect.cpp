@@ -32,12 +32,12 @@ void ball_detect(){
 
      core_msgs::ball_position msg;  //create a message for ball positions
      msg.size =circles.size(); //adjust the size of message. (*the size of message is varying depending on how many circles are detected)
-     msg.img_x.resize(circles.size());  //adjust the size of array
-     msg.img_y.resize(circles.size());  //adjust the size of array
+     msg.img_x.resize(circles.size());  // adjust the size of array
+     msg.img_y.resize(circles.size());  // adjust the size of array
 
 	visualization_msgs::Marker ball_list;  //declare marker
-	ball_list.header.frame_id = "/camera_link";  //set the frame
-	ball_list.header.stamp = ros::Time::now();   //set the header. without it, the publisher may not publish.
+	ball_list.header.frame_id = "/camera_link";  // set the frame
+	ball_list.header.stamp = ros::Time::now();   // set the header. without it, the publisher may not publish.
 	ball_list.ns = "balls";   //name of markers
 	ball_list.action = visualization_msgs::Marker::ADD;
 	ball_list.pose.position.x=0; //the transformation between the frame and camera data, just set it (0,0,0,0,0,0) for (x,y,z,roll,pitch,yaw)

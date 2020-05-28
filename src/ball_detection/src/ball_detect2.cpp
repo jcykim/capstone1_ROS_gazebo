@@ -15,25 +15,23 @@ ros::Publisher pub;
 ros::Publisher pub_markers;
 
 void ball_detect(){
-     Mat gray;  //assign a memory to save the edge images
-     Mat frame;  //assign a memory to save the images
+     Mat gray;
+     Mat frame;
      Mat mask,mask1, mask2;
 
      cvtColor(buffer, gray, CV_RGB2GRAY);
      gray=~gray;
 
-
-
      vector<Vec3f> circles; //assign a memory to save the result of circle detection
-     HoughCircles(gray,circles,HOUGH_GRADIENT, 1, 20, 50, 35, 0,0); //proceed circle detection
+     HoughCircles(gray,circles,HOUGH_GRADIENT, 1, 15, 45, 35, 0,0); //proceed circle detection
      Vec3f params; //assign a memory to save the information of circles
      float cx,cy,r;
      cout<<"circles.size="<<circles.size()<<endl;  //print the number of circles detected
 
-     core_msgs::ball_position msg;  //create a message for ball positions
-     msg.size =circles.size(); //adjust the size of message. (*the size of message is varying depending on how many circles are detected)
-     msg.img_x.resize(circles.size());  //adjust the size of array
-     msg.img_y.resize(circles.size());  //adjust the size of array
+     //core_msgs::ball_position msg;  //create a message for ball positions
+     //msg.size =circles.size(); //adjust the size of message. (*the size of message is varying depending on how many circles are detected)
+     //msg.img_x.resize(circles.size());  //adjust the size of array
+     //msg.img_y.resize(circles.size());  //adjust the size of array
 
 	visualization_msgs::Marker ball_list;  //declare marker
 	ball_list.header.frame_id = "/camera_link";  //set the frame
@@ -87,9 +85,6 @@ void ball_detect(){
      cv::imshow("view", buffer);  //show the image with a window
 
      cv::waitKey(1);
-     pub.publish(msg);  //publish a message
-     pub_markers.publish(ball_list);  //publish a marker message
-
 }
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
@@ -121,3 +116,4 @@ int main(int argc, char **argv)
    ros::spin(); //spin.
    return 0;
 }
+

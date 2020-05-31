@@ -284,7 +284,7 @@ int main(int argc, char** argv)
 
   auto last_turn_direction = TurnDirection::LEFT;
 
-  while (ros::ok)
+  while (ros::ok())
   {
     updateLineTracerState(wheelController, static_cast<CameraLinePosition>(section), last_turn_direction);
     ros::Duration(0.025).sleep();

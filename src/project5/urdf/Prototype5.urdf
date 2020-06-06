@@ -1,0 +1,783 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot name="myrobot" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find project5)/textures/material.xacro"/>
+  <xacro:include filename="$(find project5)/urdf/sensor.gazebo.xacro"/>
+  
+  <xacro:property name="r200_cam_rgb_px" value="0.005"/>
+  <xacro:property name="r200_cam_rgb_py" value="0.018"/>
+  <xacro:property name="r200_cam_rgb_pz" value="0.013"/>
+  <xacro:property name="r200_cam_depth_offset" value="0.01"/>
+  
+  <link name="dummy_link"/>
+  
+  <joint name="dummy" type="fixed">
+	<origin xyz="0 0 0" rpy="0 0 0"/>
+	<parent link="dummy_link"/>
+	<child link="base_link"/>
+  </joint>
+  
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.104962324979037 0.0333448844396701 0.169522333224252"
+        rpy="0 0 0" />
+      <mass
+        value="4.75773905262715" />
+      <inertia
+        ixx="0.0315910604534073"
+        ixy="-1.45789187997254E-06"
+        ixz="-3.74811309307347E-08"
+        iyy="0.0102863996786039"
+        iyz="-3.14794765413549E-07"
+        izz="0.0395251179313386" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="suspension1">
+    <inertial>
+      <origin
+        xyz="0.0633141552794688 0.0205020563003675 -0.00830590344283175"
+        rpy="0 0 0" />
+      <mass
+        value="0.104438772162201" />
+      <inertia
+        ixx="3.70769283800797E-05"
+        ixy="1.56454773175351E-07"
+        ixz="2.96411876509443E-09"
+        iyy="5.2965575070206E-05"
+        iyz="1.6485247184646E-08"
+        izz="4.21088845139327E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="suspension_joint1"
+    type="prismatic">
+    <origin
+      xyz="${0.039695-0.06} 0.1862 0.102"
+      rpy="3.1416 0 3.1416" />
+    <parent
+      link="base_link" />
+    <child
+      link="suspension1" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0.1"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="wheel1">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.23655" />
+      <inertia
+        ixx="0.00039661"
+        ixy="-6.7516E-20"
+        ixz="-1.6073E-24"
+        iyy="0.00076902"
+        iyz="5.4777E-20"
+        izz="0.00039661" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.50196 1 0.32" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_joint1"
+    type="continuous">
+    <origin
+      xyz="-0.0133 0.043 0.00020079"
+      rpy="3.1416 -0.10472 -3.1416" />
+    <parent
+      link="suspension1" />
+    <child
+      link="wheel1" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="3.1"
+      velocity="67" />
+  </joint>
+  <link
+    name="suspension2">
+    <inertial>
+      <origin
+        xyz="-0.116844511165602 0.0304945194360006 -0.0102174483376678"
+        rpy="0 0 0" />
+      <mass
+        value="0.104438772162201" />
+      <inertia
+        ixx="3.70769283800796E-05"
+        ixy="-1.56454772640764E-07"
+        ixz="2.96414696587006E-09"
+        iyy="5.29655750642632E-05"
+        iyz="-1.64857701344996E-08"
+        izz="4.21088845198754E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="suspension_joint2"
+    type="prismatic">
+    <origin
+      xyz="${0.093226-0.06} -0.1038 0.10006"
+      rpy="-3.1416 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="suspension2" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0.1"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="wheel2">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.23655" />
+      <inertia
+        ixx="0.00039661"
+        ixy="-9.6783E-21"
+        ixz="4.9449E-24"
+        iyy="0.00076902"
+        iyz="1.7633E-18"
+        izz="0.00039661" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.50196 1 0.32" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_joint2"
+    type="continuous">
+    <origin
+      xyz="-0.04023 0.042992 -0.0017344"
+      rpy="-1.5708 1.5708 -1.5708" />
+    <parent
+      link="suspension2" />
+    <child
+      link="wheel2" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      effort="3.1"
+      velocity="67" />
+  </joint>
+  <link
+    name="suspension3">
+    <inertial>
+      <origin
+        xyz="0.0633141552794679 0.0205020563003689 -0.0083059034428319"
+        rpy="0 0 0" />
+      <mass
+        value="0.104438772162201" />
+      <inertia
+        ixx="3.70769283800796E-05"
+        ixy="1.56454773175027E-07"
+        ixz="2.96411876510205E-09"
+        iyy="5.29655750702059E-05"
+        iyz="1.64852471846499E-08"
+        izz="4.21088845139327E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="suspension_joint3"
+    type="prismatic">
+    <origin
+      xyz="${-0.1403-0.06} 0.1862 0.102"
+      rpy="3.1416 0 3.1416" />
+    <parent
+      link="base_link" />
+    <child
+      link="suspension3" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0.1"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="wheel3">
+    <inertial>
+		<!--xyz="-0.063731 0.0081775 -0.0066984"-->
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.23655" />
+      <inertia
+        ixx="0.00039661"
+        ixy="-2.2732E-22"
+        ixz="3.0493E-20"
+        iyy="0.00076902"
+        iyz="4.4133E-17"
+        izz="0.00039661" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.50196 1 0.32" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_joint3"
+    type="continuous">
+    <origin
+      xyz="-0.0133 0.043 0.00020079"
+      rpy="3.1416 -0.10472 -3.1416" />
+    <parent
+      link="suspension3" />
+    <child
+      link="wheel3" />
+    <axis
+      xyz="0 1 0" />
+    <limit
+      effort="3.1"
+      velocity="67" />
+  </joint>
+  <link
+    name="suspension4">
+    <inertial>
+      <origin
+        xyz="-0.116844511600097 0.0305153201257165 -0.0101551515130834"
+        rpy="0 0 0" />
+      <mass
+        value="0.104438772162201" />
+      <inertia
+        ixx="3.70769283845381E-05"
+        ixy="-1.56460726120829E-07"
+        ixz="2.64463059975788E-09"
+        iyy="5.29655971155819E-05"
+        iyz="5.68571728109747E-09"
+        izz="4.21088624640981E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/suspension4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="suspension_joint4"
+    type="prismatic">
+    <origin
+      xyz="${-0.086774-0.06} -0.1038 0.10006"
+      rpy="3.1396 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="suspension4" />
+    <axis
+      xyz="0 0 1" />
+    <limit
+      lower="0"
+      upper="0.1"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="wheel4">
+    <inertial>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.23655" />
+      <inertia
+        ixx="0.00039661"
+        ixy="6.9079E-20"
+        ixz="-3.2779E-24"
+        iyy="0.00076902"
+        iyz="2.937E-18"
+        izz="0.00039661" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0.50196 1 0.32" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/wheel4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="wheel_joint4"
+    type="continuous">
+    <origin
+      xyz="-0.04023 0.052996 -0.0016262"
+      rpy="1.5708 1.5688 1.5708" />
+    <parent
+      link="suspension4" />
+    <child
+      link="wheel4" />
+    <axis
+      xyz="0 -1 0" />
+    <limit
+      effort="3.1"
+      velocity="67" />
+  </joint>
+  <link
+    name="2ndfloor">
+    <inertial>
+      <origin
+        xyz="6.93889390390723E-18 0.0025 0"
+        rpy="0 0 0" />
+      <mass
+        value="0.44084" />
+      <inertia
+        ixx="0.00279204908333334"
+        ixy="-2.34154038519559E-22"
+        ixz="-3.38315571715042E-20"
+        iyy="0.00599356933333333"
+        iyz="-1.02246729447306E-22"
+        izz="0.00320335708333333" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/2ndfloor.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.901960784313726 0.901960784313726 0.858823529411765 0.32" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://project5/meshes/2ndfloor.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="2ndfloor_joint"
+    type="fixed">
+    <origin
+      xyz="-0.11438 0.036202 0.2"
+      rpy="1.5708 0 1.5708" />
+    <parent
+      link="base_link" />
+    <child
+      link="2ndfloor" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  
+  <link name="lidar">
+	<visual>
+		<origin xyz="0 0 0.01" rpy="0 0 0"/>
+		<geometry>
+			<cylinder radius="0.01" length="0.02"/>
+		</geometry>
+	</visual>
+  </link>
+  
+  <joint name="lidar_joint" type="fixed">
+	<origin xyz="${-0.04925-0.06} 0.03567 ${0.28473+0.03}" rpy="0 0 0"/>\
+	<parent link="base_link"/>
+	<child link="lidar"/>
+  </joint>
+  
+  <link name="imu_link">
+	<visual>
+		<origin xyz="0 0 0.01" rpy="0 0 0"/>
+		<geometry>
+			<cylinder radius="0.01" length="0.02"/>
+		</geometry>
+	</visual>
+  </link>
+  
+  <joint name="imu_joint" type="fixed">
+	<origin xyz="${-0.04925-0.06} 0.03567 ${0.28473}" rpy="0 0 0"/>\
+	<parent link="base_link"/>
+	<child link="imu_link"/>
+  </joint>
+  
+   <joint name="camera_joint" type="fixed">
+    <origin xyz="${0.07824-0.06} 0.03620 0.22128" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+  </joint>
+
+  <link name="camera_link">
+    <visual>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+       <box size="0.02 0.02 0.02" />
+      </geometry>
+    </visual>
+  </link>
+  
+  <joint name="camera_rgb_joint" type="fixed">
+    <origin xyz="${r200_cam_rgb_px} ${r200_cam_rgb_py} ${r200_cam_rgb_pz}" rpy="0 0 0"/>
+    <parent link="camera_link"/>
+    <child link="camera_rgb_frame"/>
+  </joint>
+  <link name="camera_rgb_frame"/>
+
+  <joint name="camera_rgb_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
+    <parent link="camera_rgb_frame"/>
+    <child link="camera_rgb_optical_frame"/>
+  </joint>
+  <link name="camera_rgb_optical_frame"/>
+
+  <joint name="camera_depth_joint" type="fixed">
+    <origin xyz="${r200_cam_rgb_px} ${r200_cam_rgb_py + r200_cam_depth_offset} ${r200_cam_rgb_pz}" rpy="0 0 0"/>
+    <parent link="camera_link"/>
+    <child link="camera_depth_frame"/>
+  </joint>
+  <link name="camera_depth_frame"/>
+
+  <joint name="camera_depth_optical_joint" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
+    <parent link="camera_depth_frame"/>
+    <child link="camera_depth_optical_frame"/>
+  </joint>
+  <link name="camera_depth_optical_frame"/>
+  <!--2-->
+  <joint name="camera_joint2" type="fixed">
+    <origin xyz="${0.03998-0.06} 0.03620 0.21695" rpy="0 1.5707 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link2"/>
+  </joint>
+
+  <link name="camera_link2">
+    <visual>
+     <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+       <box size="0.02 0.02 0.02" />
+      </geometry>
+    </visual>
+  </link>
+  
+  <joint name="camera_rgb_joint2" type="fixed">
+    <origin xyz="${r200_cam_rgb_px} ${r200_cam_rgb_py} ${r200_cam_rgb_pz}" rpy="0 0 0"/>
+    <parent link="camera_link2"/>
+    <child link="camera_rgb_frame2"/>
+  </joint>
+  <link name="camera_rgb_frame2"/>
+
+  <joint name="camera_rgb_optical_joint2" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
+    <parent link="camera_rgb_frame2"/>
+    <child link="camera_rgb_optical_frame2"/>
+  </joint>
+  <link name="camera_rgb_optical_frame2"/>
+
+  <joint name="camera_depth_joint2" type="fixed">
+    <origin xyz="${r200_cam_rgb_px} ${r200_cam_rgb_py + r200_cam_depth_offset} ${r200_cam_rgb_pz}" rpy="0 0 0"/>
+    <parent link="camera_link2"/>
+    <child link="camera_depth_frame2"/>
+  </joint>
+  <link name="camera_depth_frame2"/>
+
+  <joint name="camera_depth_optical_joint2" type="fixed">
+    <origin xyz="0 0 0" rpy="-1.57 0 -1.57"/>
+    <parent link="camera_depth_frame2"/>
+    <child link="camera_depth_optical_frame2"/>
+  </joint>
+  <link name="camera_depth_optical_frame2"/>
+  
+  <transmission name="1_suspension_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="suspension_joint1">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="linear1">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+  <transmission name="2_suspension_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="suspension_joint2">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="linear2">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+  <transmission name="3_suspension_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="suspension_joint3">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="linear3">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+  <transmission name="4_suspension_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="suspension_joint4">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="linear4">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+  <transmission name="1_wheel_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_joint1">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="rotate1">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+	<transmission name="4_wheel_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_joint4">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="rotate4">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+	<transmission name="2_wheel_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_joint2">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="rotate2">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+	
+	<transmission name="3_wheel_act">
+		<type>transmission_interface/SimpleTransmission</type>
+		<joint name="wheel_joint3">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+		</joint>
+		<actuator name="rotate3">
+			<hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+			<mechanicalReduction>1</mechanicalReduction>
+		</actuator>
+	</transmission>
+  
+  <gazebo>
+		<plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+			<robotNamespace>/myrobot</robotNamespace>
+			<robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+		</plugin>
+	</gazebo>
+</robot>

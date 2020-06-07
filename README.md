@@ -29,11 +29,11 @@ roslaunch map_generate import_world.launch
 ```
 swapn the robot
 ```
-roslaunch project5 myrobot.launch
+roslaunch p31 myrobot.launch
 ```
 launch the controller_manager
 ```
-roslaunch project5_control control.launch
+roslaunch p31_control control.launch
 ```
 steer the robot
 ```

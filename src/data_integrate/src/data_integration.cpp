@@ -38,11 +38,15 @@ float lidar_degree[400];
 float lidar_distance[400];
 float lidar_obs;
 
-int ball_number;
-float ball_X[20];
-float ball_Y[20];
-float ball_distance[20];
+
 int near_ball;
+
+int32_t blue_num, red_num, green_num, section;
+bool is_bump, still_blue;
+float blue_x[20], red_x[20], green_x[20];
+float blue_y[20], red_y[20], green_y[20];
+float blue_distance[20], red_distance[20], green_distance[20];
+
 
 int action;
 
@@ -65,21 +69,40 @@ void lidar_Callback(const sensor_msgs::LaserScan::ConstPtr& scan)
   map_mutex.unlock();
 }
 
-void camera_Callback(const core_msgs::ball_position::ConstPtr& position)
+void camera_Callback_1(const core_msgs::ball_position::ConstPtr& position)
 {
+  blue_num = position->blue_num;
+  red_num = position->red_num;
+  // Note: There is only 1 green ball, but we track # of green balls anyway for consistency
+  green_num = position->green_num;
+  still_blue = position->still_blue;
 
-    int count = position->size;
-    ball_number=count;
-    for(int i = 0; i < count; i++)
-    {
-        ball_X[i] = position->img_x[i];
-        ball_Y[i] = position->img_y[i];
-        // std::cout << "degree : "<< ball_degree[i];
-        // std::cout << "   distance : "<< ball_distance[i]<<std::endl;
-		ball_distance[i] = ball_X[i]*ball_X[i]+ball_Y[i]*ball_X[i];
-    }
-
+  for (int i = 0; i < blue_num; i++)
+  {
+    blue_x[i] = position->blue_x[i];
+    blue_y[i] = position->blue_y[i];
+    blue_distance[i] = position->blue_z[i];
+  }
+  for (int i = 0; i < red_num; i++)
+  {
+    red_x[i] = position->red_x[i];
+    red_y[i] = position->red_y[i];
+    red_distance[i] = position->red_z[i];
+  }
+  for (int i = 0; i < green_num; i++)
+  {
+    green_x[i] = position->green_x[i];
+    green_y[i] = position->green_y[i];
+    green_distance[i] = position->green_z[i];
+  }
 }
+/*
+void camera_Callback_2(const core_msgs::line_info::ConstPtr& line_info)
+{
+  is_bump = line_info->is_bump;
+  section = line_info->section;
+}
+*/
 class WheelController
 {
 public:
@@ -167,7 +190,9 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
 
     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
-    ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
+    ros::Subscriber sub_ball_harvest = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback_1);
+    //ros::Subscriber sub_line_tracing = n.subscribe<core_msgs::line_info>("/line_info", 1000, camera_Callback_2);
+
     ros::Publisher fl_wheel = n.advertise<std_msgs::Float64>("/myrobot/FLwheel_velocity_controller/command", 10);
     ros::Publisher fr_wheel = n.advertise<std_msgs::Float64>("/myrobot/FRwheel_velocity_controller/command", 10);
 	ros::Publisher fl_publish= n.advertise<std_msgs::Float64>("myrobot/FLsuspension_position_controller/command", 10);

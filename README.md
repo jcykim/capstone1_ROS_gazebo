@@ -12,7 +12,7 @@ sudo apt-get install ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control
 ```
 down load source file
 ```
-git clone https://github.com/kaistcapstone/capstone1_ROS_gazebo
+git clone https://github.com/Eugene-Jeon/capstone1_ROS_gazebo
 ```
 build the code
 ```
@@ -29,11 +29,11 @@ roslaunch map_generate import_world.launch
 ```
 swapn the robot
 ```
-roslaunch turtlebot3_description spawn_turtlebot3.launch
+roslaunch p31 myrobot.launch
 ```
 launch the controller_manager
 ```
-roslaunch junny_control junny_control.launch
+roslaunch p31_control control.launch
 ```
 steer the robot
 ```

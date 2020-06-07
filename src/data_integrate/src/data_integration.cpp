@@ -177,7 +177,7 @@ int main(int argc, char **argv)
 
     WheelController wheelController(fl_wheel, fr_wheel);
 
-    while(ros::ok){
+    while(ros::ok()){
 		std_msgs::Float64 FL_position_msg;
 		std_msgs::Float64 FR_position_msg;
 		std_msgs::Float64 CS_position_msg;

@@ -83,9 +83,8 @@ void camera_Callback(const core_msgs::ball_position::ConstPtr& position)
 class WheelController
 {
 public:
-  WheelController(const ros::Publisher& fl_wheel, const ros::Publisher& fr_wheel, const ros::Publisher& bl_wheel,
-                  const ros::Publisher& br_wheel)
-    : fl_wheel_(fl_wheel), fr_wheel_(fr_wheel), bl_wheel_(bl_wheel), br_wheel_(br_wheel)
+  WheelController(const ros::Publisher& fl_wheel, const ros::Publisher& fr_wheel)
+    : fl_wheel_(fl_wheel), fr_wheel_(fr_wheel)
   {
   }
 
@@ -110,8 +109,6 @@ public:
     const double ANGULAR_SPEED_FACTOR = 1.0;
 
     setWheelSpeeds(linear_speed_ * LINEAR_SPEED_FACTOR - angular_speed_ * ANGULAR_SPEED_FACTOR,
-                   linear_speed_ * LINEAR_SPEED_FACTOR + angular_speed_ * ANGULAR_SPEED_FACTOR,
-                   linear_speed_ * LINEAR_SPEED_FACTOR - angular_speed_ * ANGULAR_SPEED_FACTOR,
                    linear_speed_ * LINEAR_SPEED_FACTOR + angular_speed_ * ANGULAR_SPEED_FACTOR);
   }
 
@@ -140,31 +137,27 @@ public:
 private:
   const ros::Publisher& fl_wheel_;
   const ros::Publisher& fr_wheel_;
-  const ros::Publisher& bl_wheel_;
-  const ros::Publisher& br_wheel_;
 
-  double linear_speed_ = 0.0;
+
+  double linear_speed_ = 10.0;
   double angular_speed_ = 0;
 
   /**
    * 4개의 바퀴에 각각의 속도를 지정한다.
    */
-  void setWheelSpeeds(double fl_speed, double fr_speed, double bl_speed, double br_speed) const
+  void setWheelSpeeds(double fl_speed, double fr_speed) const
   {
     std_msgs::Float64 fl_wheel_msg;
     std_msgs::Float64 fr_wheel_msg;
-    std_msgs::Float64 bl_wheel_msg;
-    std_msgs::Float64 br_wheel_msg;
+
 
     fl_wheel_msg.data = fl_speed;
     fr_wheel_msg.data = fr_speed;
-    bl_wheel_msg.data = bl_speed;
-    br_wheel_msg.data = br_speed;
+
 
     fl_wheel_.publish(fl_wheel_msg);
     fr_wheel_.publish(fr_wheel_msg);
-    bl_wheel_.publish(bl_wheel_msg);
-    br_wheel_.publish(br_wheel_msg);
+
   }
 };
 
@@ -177,32 +170,27 @@ int main(int argc, char **argv)
     ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
     ros::Publisher fl_wheel = n.advertise<std_msgs::Float64>("/myrobot/FLwheel_velocity_controller/command", 10);
     ros::Publisher fr_wheel = n.advertise<std_msgs::Float64>("/myrobot/FRwheel_velocity_controller/command", 10);
-    ros::Publisher bl_wheel = n.advertise<std_msgs::Float64>("/myrobot/BLwheel_velocity_controller/command", 10);
-    ros::Publisher br_wheel = n.advertise<std_msgs::Float64>("/myrobot/BRwheel_velocity_controller/command", 10);
 	ros::Publisher fl_publish= n.advertise<std_msgs::Float64>("myrobot/FLsuspension_position_controller/command", 10);
     ros::Publisher fr_publish = n.advertise<std_msgs::Float64>("/myrobot/FRsuspension_position_controller/command", 10);
-    ros::Publisher bl_publish = n.advertise<std_msgs::Float64>("/myrobot/BLsuspension_position_controller/command", 10);
-    ros::Publisher br_publish = n.advertise<std_msgs::Float64>("/myrobot/BRsuspension_position_controller/command", 10);
+    ros::Publisher cs_publish = n.advertise<std_msgs::Float64>("/myrobot/CSsuspension_position_controller/command", 10);
 
-    WheelController wheelController(fl_wheel, fr_wheel, bl_wheel, br_wheel);
+
+    WheelController wheelController(fl_wheel, fr_wheel);
 
     while(ros::ok){
 		std_msgs::Float64 FL_position_msg;
 		std_msgs::Float64 FR_position_msg;
-		std_msgs::Float64 BL_position_msg;
-		std_msgs::Float64 BR_position_msg;
+		std_msgs::Float64 CS_position_msg;
 		
 		FL_position_msg.data = 0.05;
 		FR_position_msg.data = 0.05;
-		BL_position_msg.data = 0.05;
-		BR_position_msg.data = 0.05;
+		CS_position_msg.data = 0.05;
 			
-			double linear_speed = 150;
+			double linear_speed = 50;
       double angular_speed = 0;
 	fl_publish.publish(FL_position_msg);
 	fr_publish.publish(FR_position_msg);
-	bl_publish.publish(BL_position_msg);
-	br_publish.publish(BR_position_msg);
+	cs_publish.publish(CS_position_msg);
       wheelController.setSpeed(linear_speed, angular_speed);
 	  std::cout << "moving" << std::endl;
 			

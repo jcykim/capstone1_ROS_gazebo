@@ -1,0 +1,33 @@
+myrobot:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100  
+
+  # Position Controllers ---------------------------------------
+  FLsuspension_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: suspension_joint1
+    pid: {p: 10000.0, i: 0.0, d: 1000}
+    
+  FRsuspension_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: suspension_joint2
+    pid: {p: 10000.0, i: 0.0, d: 1000}
+    
+  CSsuspension_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: suspension_joint3
+    pid: {p: 10000.0, i: 0.0, d: 1000}
+   
+  # Velocity Controllers --------------------------------------- 
+  FLwheel_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: wheel_joint1
+    pid: {p: 100, i: 0.00, d: 0}
+    
+  FRwheel_velocity_controller:
+    type: effort_controllers/JointVelocityController
+    joint: wheel_joint2
+    pid: {p: 100, i: 0.00, d: 0}
+

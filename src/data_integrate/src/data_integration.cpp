@@ -1,35 +1,32 @@
-#include <iostream>
-#include <stdio.h>
-#include <algorithm>
-#include <fstream>
-#include <chrono>
-#include <string>
-#include <signal.h>
+#include <arpa/inet.h>
 #include <math.h>
+#include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <algorithm>
 #include <boost/thread.hpp>
+#include <chrono>
+#include <fstream>
+#include <iostream>
+#include <string>
 
-
-#include <ros/ros.h>
 #include <ros/package.h>
+#include <ros/ros.h>
 #include "core_msgs/ball_position.h"
 
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
+#include "std_msgs/Float64.h"
 #include "std_msgs/Int8.h"
 #include "std_msgs/String.h"
-#include "std_msgs/Float64.h"
-
 
 #include "opencv2/opencv.hpp"
 
-
-#define RAD2DEG(x) ((x)*180./M_PI)
+#define RAD2DEG(x) ((x)*180. / M_PI)
 
 boost::mutex map_mutex;
 
@@ -37,7 +34,6 @@ int lidar_size;
 float lidar_degree[400];
 float lidar_distance[400];
 float lidar_obs;
-
 
 int near_ball;
 
@@ -47,13 +43,12 @@ float blue_x[20], red_x[20], green_x[20];
 float blue_y[20], red_y[20], green_y[20];
 float blue_distance[20], red_distance[20], green_distance[20];
 
-
 int action;
 
 int len;
 int n;
 
-#define RAD2DEG(x) ((x)*180./M_PI)
+#define RAD2DEG(x) ((x)*180. / M_PI)
 
 void lidar_Callback(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
@@ -161,7 +156,6 @@ private:
   const ros::Publisher& fl_wheel_;
   const ros::Publisher& fr_wheel_;
 
-
   double linear_speed_ = 10.0;
   double angular_speed_ = 0;
 
@@ -173,59 +167,52 @@ private:
     std_msgs::Float64 fl_wheel_msg;
     std_msgs::Float64 fr_wheel_msg;
 
-
     fl_wheel_msg.data = fl_speed;
     fr_wheel_msg.data = fr_speed;
 
-
     fl_wheel_.publish(fl_wheel_msg);
     fr_wheel_.publish(fr_wheel_msg);
-
   }
 };
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "data_integation");
-    ros::NodeHandle n;
+  ros::init(argc, argv, "data_integation");
+  ros::NodeHandle n;
 
-    ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
-    ros::Subscriber sub_ball_harvest = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback_1);
-    //ros::Subscriber sub_line_tracing = n.subscribe<core_msgs::line_info>("/line_info", 1000, camera_Callback_2);
+  ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
+  ros::Subscriber sub_ball_harvest = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback_1);
+  // ros::Subscriber sub_line_tracing = n.subscribe<core_msgs::line_info>("/line_info", 1000, camera_Callback_2);
 
-    ros::Publisher fl_wheel = n.advertise<std_msgs::Float64>("/myrobot/FLwheel_velocity_controller/command", 10);
-    ros::Publisher fr_wheel = n.advertise<std_msgs::Float64>("/myrobot/FRwheel_velocity_controller/command", 10);
-	ros::Publisher fl_publish= n.advertise<std_msgs::Float64>("myrobot/FLsuspension_position_controller/command", 10);
-    ros::Publisher fr_publish = n.advertise<std_msgs::Float64>("/myrobot/FRsuspension_position_controller/command", 10);
-    ros::Publisher cs_publish = n.advertise<std_msgs::Float64>("/myrobot/CSsuspension_position_controller/command", 10);
+  ros::Publisher fl_wheel = n.advertise<std_msgs::Float64>("/myrobot/FLwheel_velocity_controller/command", 10);
+  ros::Publisher fr_wheel = n.advertise<std_msgs::Float64>("/myrobot/FRwheel_velocity_controller/command", 10);
+  ros::Publisher fl_publish = n.advertise<std_msgs::Float64>("myrobot/FLsuspension_position_controller/command", 10);
+  ros::Publisher fr_publish = n.advertise<std_msgs::Float64>("/myrobot/FRsuspension_position_controller/command", 10);
+  ros::Publisher cs_publish = n.advertise<std_msgs::Float64>("/myrobot/CSsuspension_position_controller/command", 10);
 
+  WheelController wheelController(fl_wheel, fr_wheel);
 
-    WheelController wheelController(fl_wheel, fr_wheel);
+  while (ros::ok())
+  {
+    std_msgs::Float64 FL_position_msg;
+    std_msgs::Float64 FR_position_msg;
+    std_msgs::Float64 CS_position_msg;
 
-    while(ros::ok()){
-		std_msgs::Float64 FL_position_msg;
-		std_msgs::Float64 FR_position_msg;
-		std_msgs::Float64 CS_position_msg;
-		
-		FL_position_msg.data = 0.05;
-		FR_position_msg.data = 0.05;
-		CS_position_msg.data = 0.05;
-			
-			double linear_speed = 50;
-      double angular_speed = 0;
-	fl_publish.publish(FL_position_msg);
-	fr_publish.publish(FR_position_msg);
-	cs_publish.publish(CS_position_msg);
-      wheelController.setSpeed(linear_speed, angular_speed);
-	  std::cout << "moving" << std::endl;
-			
+    FL_position_msg.data = 0.05;
+    FR_position_msg.data = 0.05;
+    CS_position_msg.data = 0.05;
 
-		  
+    double linear_speed = 50;
+    double angular_speed = 0;
+    fl_publish.publish(FL_position_msg);
+    fr_publish.publish(FR_position_msg);
+    cs_publish.publish(CS_position_msg);
+    wheelController.setSpeed(linear_speed, angular_speed);
+    std::cout << "moving" << std::endl;
 
+    ros::Duration(0.025).sleep();
+    ros::spinOnce();
+  }
 
-	    ros::Duration(0.025).sleep();
-	    ros::spinOnce();
-    }
-
-    return 0;
+  return 0;
 }

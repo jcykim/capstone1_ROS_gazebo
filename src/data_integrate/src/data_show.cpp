@@ -83,7 +83,7 @@ int main(int argc, char** argv)
   ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
   ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
 
-  while (ros::ok)
+  while (ros::ok())
   {
     cv::Mat map = cv::Mat::zeros(MAP_WIDTH, MAP_HEIGHT, CV_8UC3);
     // Drawing Lidar data
